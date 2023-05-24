@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { haversineDistance } from '../assets/calculations';
 import { MapProps } from '../assets/interface';
+import { Alert, Input } from './calcComponents';
 
 import './Calc.css';
 
@@ -11,6 +12,8 @@ export default function Calc({
 	islandCoordinates: islandCoordinates,
 	setIslandCoordinates: setIslandCoordinates,
 }: MapProps) {
+	const [fuel, setFuel] = useState(1);
+	const [speed, setSpeed] = useState(10);
 	const [distance, setDistance] = useState(0);
 	const [travelTime, setTravelTime] = useState(0);
 	const [requiredFuel, setRequiredFuel] = useState(0);
@@ -42,13 +45,13 @@ export default function Calc({
 			setIsDataCorrect(true);
 
 			const calculatedDistance = haversineDistance(
-				portCoordinates[0],
 				portCoordinates[1],
-				islandCoordinates[0],
-				islandCoordinates[1]
+				portCoordinates[0],
+				islandCoordinates[1],
+				islandCoordinates[0]
 			);
-			const calculatedTravelTime = calculatedDistance / 10; // Przyjmujemy prędkość 10 km/h
-			const calculatedRequiredFuel = calculatedDistance; // Przyjmujemy zużycie paliwa 1 litr na kilometr
+			const calculatedTravelTime = calculatedDistance / speed;
+			const calculatedRequiredFuel = calculatedDistance * fuel;
 
 			setDistance(calculatedDistance);
 			setTravelTime(calculatedTravelTime);
@@ -58,97 +61,101 @@ export default function Calc({
 		}
 	};
 
-	const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		switch (e.target.id) {
+	const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
+		switch (e.currentTarget.id) {
 			case 'portLatitude':
 				setPortCoordinates([
-					isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value),
-					portCoordinates[1],
+					portCoordinates[0],
+					isNaN(parseFloat(e.currentTarget.value))
+						? 0
+						: parseFloat(e.currentTarget.value),
 				]);
 				break;
 			case 'portLongitude':
 				setPortCoordinates([
-					portCoordinates[0],
-					isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value),
+					isNaN(parseFloat(e.currentTarget.value))
+						? 0
+						: parseFloat(e.currentTarget.value),
+					portCoordinates[1],
 				]);
 				break;
 			case 'islandLatitude':
 				setIslandCoordinates([
-					isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value),
-					islandCoordinates[1],
+					islandCoordinates[0],
+					isNaN(parseFloat(e.currentTarget.value))
+						? 0
+						: parseFloat(e.currentTarget.value),
 				]);
 				break;
 			case 'islandLongitude':
 				setIslandCoordinates([
-					islandCoordinates[0],
-					isNaN(parseFloat(e.target.value)) ? 0 : parseFloat(e.target.value),
+					isNaN(parseFloat(e.currentTarget.value))
+						? 0
+						: parseFloat(e.currentTarget.value),
+					islandCoordinates[1],
 				]);
+				break;
+			case 'speed':
+				setSpeed(
+					isNaN(parseFloat(e.currentTarget.value))
+						? 0
+						: parseFloat(e.currentTarget.value)
+				);
+				break;
+			case 'fuelConsumption':
+				setFuel(
+					isNaN(parseFloat(e.currentTarget.value))
+						? 0
+						: parseFloat(e.currentTarget.value)
+				);
 				break;
 			default:
 				break;
 		}
 	};
 
-	const Alert = () => {
-		return isDataCorrect ? null : (
-			<p className="alert">
-				The entered data is incorrect. <br></br>Make sure that latitude is
-				specified in degrees within the range [-90, 90]. Longitude is specified
-				in degrees within the range [-180, 180).
-			</p>
-		);
-	};
-
 	return (
 		<div className="form-container">
 			<h1>Travel Calculator</h1>
 			<form onSubmit={handleSubmit}>
-				<div className="form-element">
-					<label className="form-label" htmlFor="portLatitude">
-						The latitude of the port:
-					</label>
-					<input
-						type="text"
-						id="portLatitude"
-						value={portCoordinates[0]}
-						onChange={(e) => handleOnSubmit(e)}
-					/>
-				</div>
-				<div className="form-element">
-					<label className="form-label" htmlFor="portLongitude">
-						The longitude of the port:
-					</label>
-					<input
-						type="text"
-						id="portLongitude"
-						value={portCoordinates[1]}
-						onChange={(e) => handleOnSubmit(e)}
-					/>
-				</div>
-				<div className="form-element">
-					<label className="form-label" htmlFor="islandLatitude">
-						The latitude of the island:
-					</label>
-					<input
-						type="text"
-						id="islandLatitude"
-						value={islandCoordinates[0]}
-						onChange={(e) => handleOnSubmit(e)}
-					/>
-				</div>
-				<div className="form-element">
-					<label className="form-label" htmlFor="islandLongitude">
-						The longitude of the island:
-					</label>
-					<input
-						type="text"
-						id="islandLongitude"
-						value={islandCoordinates[1]}
-						onChange={(e) => handleOnSubmit(e)}
-					/>
-				</div>
+				<Input
+					labelName="Fuel consumption (l/km):"
+					name="fuelConsumption"
+					value={fuel}
+					handleOnChange={handleOnChange}
+				/>
+				<Input
+					labelName="Speed (km/h):"
+					name="speed"
+					value={speed}
+					handleOnChange={handleOnChange}
+				/>
+				<Input
+					labelName={'The latitude of the port:'}
+					name={'portLatitude'}
+					value={portCoordinates[1]}
+					handleOnChange={handleOnChange}
+				/>
+				<Input
+					labelName={'The longitude of the port:'}
+					name={'portLongitude'}
+					value={portCoordinates[0]}
+					handleOnChange={handleOnChange}
+				/>
+				<Input
+					labelName={'The latitude of the island:'}
+					name={'islandLatitude'}
+					value={islandCoordinates[1]}
+					handleOnChange={handleOnChange}
+				/>
+				<Input
+					labelName={'The longitude of the island:'}
+					name={'islandLongitude'}
+					value={islandCoordinates[0]}
+					handleOnChange={handleOnChange}
+				/>
 				<button type="submit">Calculate</button>
-				<Alert />
+				<Alert isDataCorrect={isDataCorrect} />
 			</form>
 			<div>
 				<h2>Results:</h2>
