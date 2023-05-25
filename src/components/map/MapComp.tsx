@@ -13,11 +13,11 @@ import {
 	RFeatureUIEvent,
 } from 'rlayers';
 
-import locationIcon from '../../public/location.svg';
+import locationIcon from '../../assets/location.svg';
 import './MapComp.css';
 
-import { MapProps } from '../assets/interface';
-import { mapCoords } from '../assets/coords';
+import { MapProps } from '../../interface/interface';
+import { mapCoords } from '../../helpers/coords';
 
 export default function Map({
 	portCoordinates: portCoordinates,

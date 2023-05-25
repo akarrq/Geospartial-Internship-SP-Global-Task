@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { haversineDistance } from '../assets/calculations';
-import { MapProps } from '../assets/interface';
+import { haversineDistance } from '../../helpers/calculations';
+import { MapProps } from '../../interface/interface';
 import { Alert, Input } from './calcComponents';
 
 import './Calc.css';

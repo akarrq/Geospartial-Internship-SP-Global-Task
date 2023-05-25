@@ -2,9 +2,9 @@ import { useState } from 'react';
 
 import './App.css';
 
-import Map from './components/MapComp';
-import Calc from './components/Calc';
-import { defaultCoords } from './assets/coords';
+import Map from './components/map/MapComp';
+import Calc from './components/calculator/Calc';
+import { defaultCoords } from './helpers/coords';
 
 function App() {
 	const [portCoordinates, setPortCoordinates] = useState(defaultCoords.port);
