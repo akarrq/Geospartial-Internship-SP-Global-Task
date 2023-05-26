@@ -1,19 +1,32 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState } from '../../store/store';
 
 import { haversineDistance } from '../../helpers/calculations';
-import { MapProps } from '../../interface/interface';
 import { Alert, Input } from './calcComponents';
+
+import {
+	setIslandCoordinatesLon,
+	setIslandCoordinatesLat,
+	setPortCoordinatesLon,
+	setPortCoordinatesLat,
+	setSpeed,
+	setFuelUsage,
+} from '../../slices/appSlice';
 
 import './Calc.css';
 
-export default function Calc({
-	portCoordinates: portCoordinates,
-	setPortCoordinates: setPortCoordinates,
-	islandCoordinates: islandCoordinates,
-	setIslandCoordinates: setIslandCoordinates,
-}: MapProps) {
-	const [fuel, setFuel] = useState(1);
-	const [speed, setSpeed] = useState(10);
+export default function Calc() {
+	const portCoordinates = useSelector(
+		(state: RootState) => state.app.portCoordinates
+	);
+	const islandCoordinates = useSelector(
+		(state: RootState) => state.app.islandCoordinates
+	);
+	const fuelUsage = useSelector((state: RootState) => state.app.fuelUsage);
+	const speed = useSelector((state: RootState) => state.app.speed);
+	const dispatch = useDispatch();
+
 	const [distance, setDistance] = useState(0);
 	const [travelTime, setTravelTime] = useState(0);
 	const [requiredFuel, setRequiredFuel] = useState(0);
@@ -51,66 +64,13 @@ export default function Calc({
 				islandCoordinates[0]
 			);
 			const calculatedTravelTime = calculatedDistance / speed;
-			const calculatedRequiredFuel = calculatedDistance * fuel;
+			const calculatedRequiredFuel = calculatedDistance * fuelUsage;
 
 			setDistance(calculatedDistance);
 			setTravelTime(calculatedTravelTime);
 			setRequiredFuel(calculatedRequiredFuel);
 		} else {
 			setIsDataCorrect(false);
-		}
-	};
-
-	const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
-		switch (e.currentTarget.id) {
-			case 'portLatitude':
-				setPortCoordinates([
-					portCoordinates[0],
-					isNaN(parseFloat(e.currentTarget.value))
-						? 0
-						: parseFloat(e.currentTarget.value),
-				]);
-				break;
-			case 'portLongitude':
-				setPortCoordinates([
-					isNaN(parseFloat(e.currentTarget.value))
-						? 0
-						: parseFloat(e.currentTarget.value),
-					portCoordinates[1],
-				]);
-				break;
-			case 'islandLatitude':
-				setIslandCoordinates([
-					islandCoordinates[0],
-					isNaN(parseFloat(e.currentTarget.value))
-						? 0
-						: parseFloat(e.currentTarget.value),
-				]);
-				break;
-			case 'islandLongitude':
-				setIslandCoordinates([
-					isNaN(parseFloat(e.currentTarget.value))
-						? 0
-						: parseFloat(e.currentTarget.value),
-					islandCoordinates[1],
-				]);
-				break;
-			case 'speed':
-				setSpeed(
-					isNaN(parseFloat(e.currentTarget.value))
-						? 0
-						: parseFloat(e.currentTarget.value)
-				);
-				break;
-			case 'fuelConsumption':
-				setFuel(
-					isNaN(parseFloat(e.currentTarget.value))
-						? 0
-						: parseFloat(e.currentTarget.value)
-				);
-				break;
-			default:
-				break;
 		}
 	};
 
@@ -121,38 +81,46 @@ export default function Calc({
 				<Input
 					labelName="Fuel consumption (l/km):"
 					name="fuelConsumption"
-					value={fuel}
-					handleOnChange={handleOnChange}
+					value={fuelUsage}
+					handleOnChange={(e) => dispatch(setFuelUsage(e.currentTarget.value))}
 				/>
 				<Input
 					labelName="Speed (km/h):"
 					name="speed"
 					value={speed}
-					handleOnChange={handleOnChange}
+					handleOnChange={(e) => dispatch(setSpeed(e.currentTarget.value))}
 				/>
 				<Input
 					labelName={'The latitude of the port:'}
 					name={'portLatitude'}
 					value={portCoordinates[1]}
-					handleOnChange={handleOnChange}
+					handleOnChange={(e) =>
+						dispatch(setPortCoordinatesLat(e.currentTarget.value))
+					}
 				/>
 				<Input
 					labelName={'The longitude of the port:'}
 					name={'portLongitude'}
 					value={portCoordinates[0]}
-					handleOnChange={handleOnChange}
+					handleOnChange={(e) =>
+						dispatch(setPortCoordinatesLon(e.currentTarget.value))
+					}
 				/>
 				<Input
 					labelName={'The latitude of the island:'}
 					name={'islandLatitude'}
 					value={islandCoordinates[1]}
-					handleOnChange={handleOnChange}
+					handleOnChange={(e) =>
+						dispatch(setIslandCoordinatesLat(e.currentTarget.value))
+					}
 				/>
 				<Input
 					labelName={'The longitude of the island:'}
 					name={'islandLongitude'}
 					value={islandCoordinates[0]}
-					handleOnChange={handleOnChange}
+					handleOnChange={(e) =>
+						dispatch(setIslandCoordinatesLon(e.currentTarget.value))
+					}
 				/>
 				<button type="submit">Calculate</button>
 				<Alert isDataCorrect={isDataCorrect} />
