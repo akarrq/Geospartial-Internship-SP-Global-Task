@@ -1,8 +1,13 @@
-// import { Coordinate } from 'ol/coordinate';
+export interface ResultsProps {
+	distance: number;
+	travelTime: number;
+	requiredFuel: number;
+	isDataCorrect: boolean;
+}
 
-// export interface MapProps {
-// 	portCoordinates: Coordinate;
-// 	setPortCoordinates: (coords: Coordinate) => void;
-// 	islandCoordinates: Coordinate;
-// 	setIslandCoordinates: (coords: Coordinate) => void;
-// }
+export interface InputProps {
+	labelName: string;
+	name: string;
+	value: number;
+	handleOnChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}

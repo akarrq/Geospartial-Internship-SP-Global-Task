@@ -4,7 +4,7 @@ import type { RootState } from '../../store/store';
 import {
 	setIslandCoordinates,
 	setPortCoordinates,
-} from '../../slices/appSlice';
+} from '../../store/slices/appSlice';
 
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Point } from 'ol/geom';
@@ -62,41 +62,39 @@ export default function Map(): JSX.Element {
 	);
 
 	return (
-		<>
-			<div className="map-container">
-				<RMap
-					className="map"
-					initial={{ center: fromLonLat(mapCoords.center), zoom: 0 }}
-				>
-					<ROSM />
-					<RLayerVector>
-						<RFeature
-							geometry={new Point(fromLonLat(portCoordinates))}
-							onPointerDrag={onPointerDrag}
-							onPointerDragEnd={onPointerPortDragEnd}
-							onPointerEnter={onPointerEnter}
-							onPointerLeave={onPointerLeave}
-						>
-							<RStyle.RStyle>
-								<RStyle.RIcon src={locationIcon} anchor={[0.5, 0.8]} />
-							</RStyle.RStyle>
-							<ROverlay className="map-info">Set port location</ROverlay>
-						</RFeature>
-						<RFeature
-							geometry={new Point(fromLonLat(islandCoordinates))}
-							onPointerDrag={onPointerDrag}
-							onPointerDragEnd={onPointerIslandDragEnd}
-							onPointerEnter={onPointerEnter}
-							onPointerLeave={onPointerLeave}
-						>
-							<RStyle.RStyle>
-								<RStyle.RIcon src={locationIcon} anchor={[0.5, 0.8]} />
-							</RStyle.RStyle>
-							<ROverlay className="map-info">Set island location</ROverlay>
-						</RFeature>
-					</RLayerVector>
-				</RMap>
-			</div>
-		</>
+		<div className="vh-100 container pe-0">
+			<RMap
+				className="h-100 w-100"
+				initial={{ center: fromLonLat(mapCoords.center), zoom: 0 }}
+			>
+				<ROSM />
+				<RLayerVector>
+					<RFeature
+						geometry={new Point(fromLonLat(portCoordinates))}
+						onPointerDrag={onPointerDrag}
+						onPointerDragEnd={onPointerPortDragEnd}
+						onPointerEnter={onPointerEnter}
+						onPointerLeave={onPointerLeave}
+					>
+						<RStyle.RStyle>
+							<RStyle.RIcon src={locationIcon} anchor={[0.5, 0.8]} />
+						</RStyle.RStyle>
+						<ROverlay className="map-info">Set port location</ROverlay>
+					</RFeature>
+					<RFeature
+						geometry={new Point(fromLonLat(islandCoordinates))}
+						onPointerDrag={onPointerDrag}
+						onPointerDragEnd={onPointerIslandDragEnd}
+						onPointerEnter={onPointerEnter}
+						onPointerLeave={onPointerLeave}
+					>
+						<RStyle.RStyle>
+							<RStyle.RIcon src={locationIcon} anchor={[0.5, 0.8]} />
+						</RStyle.RStyle>
+						<ROverlay className="map-info">Set island location</ROverlay>
+					</RFeature>
+				</RLayerVector>
+			</RMap>
+		</div>
 	);
 }

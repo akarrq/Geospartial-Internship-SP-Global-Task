@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../../store/store';
 
 import { haversineDistance } from '../../helpers/calculations';
-import { Alert, Input } from './calcComponents';
+import { Alert, Input, Results } from './calcComponents';
 
 import {
 	setIslandCoordinatesLon,
@@ -12,9 +12,7 @@ import {
 	setPortCoordinatesLat,
 	setSpeed,
 	setFuelUsage,
-} from '../../slices/appSlice';
-
-import './Calc.css';
+} from '../../store/slices/appSlice';
 
 export default function Calc() {
 	const portCoordinates = useSelector(
@@ -75,9 +73,9 @@ export default function Calc() {
 	};
 
 	return (
-		<div className="form-container">
+		<div className="vh-90 container d-flex flex-column justify-content-center align-items-center">
 			<h1>Travel Calculator</h1>
-			<form onSubmit={handleSubmit}>
+			<form className="w-90" onSubmit={handleSubmit}>
 				<Input
 					labelName="Fuel consumption (l/km):"
 					name="fuelConsumption"
@@ -122,15 +120,17 @@ export default function Calc() {
 						dispatch(setIslandCoordinatesLon(e.currentTarget.value))
 					}
 				/>
-				<button type="submit">Calculate</button>
-				<Alert isDataCorrect={isDataCorrect} />
+				<button className="btn btn-primary m-2" type="submit">
+					Calculate
+				</button>
 			</form>
-			<div>
-				<h2>Results:</h2>
-				<p>Distance: {distance.toFixed(2)} km</p>
-				<p>Travel time: {travelTime.toFixed(2)} hours</p>
-				<p>Required amount of fuel: {requiredFuel.toFixed(2)} liters</p>
-			</div>
+			<Alert isDataCorrect={isDataCorrect} />
+			<Results
+				distance={distance}
+				travelTime={travelTime}
+				requiredFuel={requiredFuel}
+				isDataCorrect={isDataCorrect}
+			/>
 		</div>
 	);
 }

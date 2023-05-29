@@ -1,9 +1,11 @@
+import { InputProps, ResultsProps } from '../../interface/interface';
+
 export const Alert = ({ isDataCorrect }: { isDataCorrect: boolean }) => {
 	return isDataCorrect ? null : (
-		<p className="alert">
+		<p className="alert alert-danger" role="alert">
 			The entered data is incorrect. <br></br>Make sure that latitude is
 			specified in degrees within the range [-90, 90]. Longitude is specified in
-			degrees within the range [-180, 180).
+			degrees within the range [-180, 180].
 		</p>
 	);
 };
@@ -13,18 +15,14 @@ export const Input = ({
 	name,
 	value,
 	handleOnChange,
-}: {
-	labelName: string;
-	name: string;
-	value: number;
-	handleOnChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}) => {
+}: InputProps) => {
 	return (
-		<div className="form-element">
+		<div className="d-flex flex-column flex-sm-row p-1">
 			<label className="form-label" htmlFor={name}>
 				{labelName}
 			</label>
 			<input
+				className="form-control align-self-center bg-dark-subtle"
 				type="text"
 				id={name}
 				value={value}
@@ -32,4 +30,20 @@ export const Input = ({
 			/>
 		</div>
 	);
+};
+
+export const Results = ({
+	distance,
+	travelTime,
+	requiredFuel,
+	isDataCorrect,
+}: ResultsProps) => {
+	return isDataCorrect ? (
+		<div className="p-3">
+			<h2>Results:</h2>
+			<p>Distance: {distance.toFixed(2)} km</p>
+			<p>Travel time: {travelTime.toFixed(2)} hours</p>
+			<p>Required amount of fuel: {requiredFuel.toFixed(2)} liters</p>
+		</div>
+	) : null;
 };

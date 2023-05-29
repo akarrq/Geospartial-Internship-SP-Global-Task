@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { defaultCoords } from '../helpers/coords';
+import { defaultCoords } from '../../helpers/coords';
 
 const initialState = {
 	portCoordinates: defaultCoords.port,
