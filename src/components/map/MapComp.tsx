@@ -7,6 +7,7 @@ import { fromLonLat, toLonLat } from 'ol/proj';
 import { Point } from 'ol/geom';
 import { Feature } from 'ol';
 import type { TranslateEvent } from 'ol/interaction/Translate';
+import type { Coordinate } from 'ol/coordinate';
 import 'ol/ol.css';
 import {
 	RMap,
@@ -34,7 +35,7 @@ export default function Map(): JSX.Element {
 	const [features, setFeatures] = useState<Feature[]>([]);
 
 	useEffect(() => {
-		const stateCoords = {
+		const stateCoords: Record<string, Coordinate> = {
 			port: portCoordinates,
 			island: islandCoordinates,
 		};
