@@ -43,7 +43,7 @@ export const appSlice = createSlice({
 		setIslandCoordinatesLon: (state, action: PayloadAction<string>) => {
 			state.islandCoordinates = [
 				parseFloat(action.payload) || 0,
-				state.portCoordinates[1],
+				state.islandCoordinates[1],
 			];
 		},
 		setFuelUsage: (state, action: PayloadAction<string>) => {
