@@ -34,21 +34,12 @@ export default function Calc() {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
-		if (
-			!isNaN(portCoordinates[0]) &&
-			!isNaN(portCoordinates[1]) &&
-			!isNaN(islandCoordinates[0]) &&
-			!isNaN(islandCoordinates[1])
-		) {
+		if ([...portCoordinates, ...islandCoordinates].every((v) => !isNaN(v))) {
 			if (
-				portCoordinates[0] > 180 ||
-				portCoordinates[0] < -180 ||
-				portCoordinates[1] > 90 ||
-				portCoordinates[1] < -90 ||
-				islandCoordinates[0] > 180 ||
-				islandCoordinates[0] < -180 ||
-				islandCoordinates[1] > 90 ||
-				islandCoordinates[1] < -90
+				!(-180 <= portCoordinates[0] && portCoordinates[0] <= 180) ||
+				!(-90 <= portCoordinates[1] && portCoordinates[1] <= 90) ||
+				!(-180 <= islandCoordinates[0] && islandCoordinates[0] <= 180) ||
+				!(-90 <= islandCoordinates[1] && islandCoordinates[1] <= 90)
 			) {
 				setIsDataCorrect(false);
 				return;

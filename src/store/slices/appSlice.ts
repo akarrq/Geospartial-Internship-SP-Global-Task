@@ -14,54 +14,51 @@ export const appSlice = createSlice({
 	name: 'app',
 	initialState,
 	reducers: {
+		setCoordinates: (state, action) => {
+			if (action.payload.id === 'port') {
+				state.portCoordinates = action.payload.coords;
+			} else if (action.payload.id === 'island') {
+				state.islandCoordinates = action.payload.coords;
+			}
+		},
 		setPortCoordinatesLat: (state, action: PayloadAction<string>) => {
 			state.portCoordinates = [
 				state.portCoordinates[0],
-				isNaN(parseFloat(action.payload)) ? 0 : parseFloat(action.payload),
+				parseFloat(action.payload) || 0,
 			];
 		},
 		setPortCoordinatesLon: (state, action: PayloadAction<string>) => {
 			state.portCoordinates = [
-				isNaN(parseFloat(action.payload)) ? 0 : parseFloat(action.payload),
+				parseFloat(action.payload) || 0,
 				state.portCoordinates[1],
 			];
 		},
-		setPortCoordinates: (state, action: PayloadAction<number[]>) => {
-			state.portCoordinates = action.payload;
-		},
+
 		setIslandCoordinatesLat: (state, action: PayloadAction<string>) => {
 			state.islandCoordinates = [
 				state.islandCoordinates[0],
-				isNaN(parseFloat(action.payload)) ? 0 : parseFloat(action.payload),
+				parseFloat(action.payload) || 0,
 			];
 		},
 		setIslandCoordinatesLon: (state, action: PayloadAction<string>) => {
 			state.islandCoordinates = [
-				isNaN(parseFloat(action.payload)) ? 0 : parseFloat(action.payload),
+				parseFloat(action.payload) || 0,
 				state.portCoordinates[1],
 			];
 		},
-		setIslandCoordinates: (state, action: PayloadAction<number[]>) => {
-			state.islandCoordinates = action.payload;
-		},
 		setFuelUsage: (state, action: PayloadAction<string>) => {
-			state.fuelUsage = isNaN(parseFloat(action.payload))
-				? 0
-				: parseFloat(action.payload);
+			state.fuelUsage = parseFloat(action.payload) || 0;
 		},
 		setSpeed: (state, action: PayloadAction<string>) => {
-			state.speed = isNaN(parseFloat(action.payload))
-				? 0
-				: parseFloat(action.payload);
+			state.speed = parseFloat(action.payload) || 0;
 		},
 	},
 });
 
 export const {
-	setPortCoordinates,
+	setCoordinates,
 	setPortCoordinatesLat,
 	setPortCoordinatesLon,
-	setIslandCoordinates,
 	setIslandCoordinatesLat,
 	setIslandCoordinatesLon,
 	setFuelUsage,

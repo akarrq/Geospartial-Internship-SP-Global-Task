@@ -1,16 +1,21 @@
-import { useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCoordinates } from '../../store/slices/appSlice';
 import type { RootState } from '../../store/store';
-import {
-	setIslandCoordinates,
-	setPortCoordinates,
-} from '../../store/slices/appSlice';
 
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { Point } from 'ol/geom';
+import { Feature } from 'ol';
+import type { TranslateEvent } from 'ol/interaction/Translate';
 import 'ol/ol.css';
-import { RMap, ROSM, RLayerVector, RFeature, ROverlay, RStyle } from 'rlayers';
-import type { RFeatureUIEvent } from 'rlayers';
+import {
+	RMap,
+	ROSM,
+	RLayerVector,
+	RFeature,
+	RInteraction,
+	RStyle,
+} from 'rlayers';
 
 import locationIcon from '../../assets/location.svg';
 import './MapComp.css';
@@ -26,40 +31,25 @@ export default function Map(): JSX.Element {
 	);
 	const dispatch = useDispatch();
 
-	const onPointerDrag = useCallback((e: RFeatureUIEvent) => {
-		const coords = e.map.getCoordinateFromPixel(e.pixel);
-		e.target.setGeometry(new Point(coords));
-		e.preventDefault();
-		return false;
-	}, []);
+	const [features, setFeatures] = useState<Feature[]>([]);
 
-	const onPointerIslandDragEnd = useCallback(
-		(e: RFeatureUIEvent) => {
-			const coords = e.map.getCoordinateFromPixel(e.pixel);
-			dispatch(setIslandCoordinates(toLonLat(coords)));
-		},
-		[dispatch]
-	);
+	useEffect(() => {
+		const stateCoords = {
+			port: portCoordinates,
+			island: islandCoordinates,
+		};
 
-	const onPointerPortDragEnd = useCallback(
-		(e: RFeatureUIEvent) => {
-			const coords = e.map.getCoordinateFromPixel(e.pixel);
-			dispatch(setPortCoordinates(toLonLat(coords)));
-		},
-		[dispatch]
-	);
+		const updatedFeatures = Object.keys(stateCoords).map(
+			(f) =>
+				new Feature({
+					geometry: new Point(fromLonLat(stateCoords[f])),
+					name: f,
+				})
+		);
+		setFeatures(updatedFeatures);
+	}, [portCoordinates, islandCoordinates]);
 
-	const onPointerEnter = useCallback(
-		(e: RFeatureUIEvent) =>
-			(e.map.getTargetElement().style.cursor = 'move') && undefined,
-		[]
-	);
-
-	const onPointerLeave = useCallback(
-		(e: RFeatureUIEvent) =>
-			(e.map.getTargetElement().style.cursor = 'initial') && undefined,
-		[]
-	);
+	const vectorRef = useRef() as React.RefObject<RLayerVector>;
 
 	return (
 		<div className="vh-100 container pe-0">
@@ -68,32 +58,29 @@ export default function Map(): JSX.Element {
 				initial={{ center: fromLonLat(mapCoords.center), zoom: 0 }}
 			>
 				<ROSM />
-				<RLayerVector>
-					<RFeature
-						geometry={new Point(fromLonLat(portCoordinates))}
-						onPointerDrag={onPointerDrag}
-						onPointerDragEnd={onPointerPortDragEnd}
-						onPointerEnter={onPointerEnter}
-						onPointerLeave={onPointerLeave}
-					>
-						<RStyle.RStyle>
-							<RStyle.RIcon src={locationIcon} anchor={[0.5, 0.8]} />
-						</RStyle.RStyle>
-						<ROverlay className="map-info">Set port location</ROverlay>
-					</RFeature>
-					<RFeature
-						geometry={new Point(fromLonLat(islandCoordinates))}
-						onPointerDrag={onPointerDrag}
-						onPointerDragEnd={onPointerIslandDragEnd}
-						onPointerEnter={onPointerEnter}
-						onPointerLeave={onPointerLeave}
-					>
-						<RStyle.RStyle>
-							<RStyle.RIcon src={locationIcon} anchor={[0.5, 0.8]} />
-						</RStyle.RStyle>
-						<ROverlay className="map-info">Set island location</ROverlay>
-					</RFeature>
+				<RLayerVector ref={vectorRef}>
+					<RStyle.RStyle>
+						<RStyle.RIcon src={locationIcon} />
+					</RStyle.RStyle>
+					{features.map((f, i) => (
+						<RFeature key={i} feature={f} />
+					))}
 				</RLayerVector>
+
+				<RInteraction.RTranslate
+					onTranslateEnd={useCallback(
+						(e: TranslateEvent) => {
+							const f = e.features.item(0);
+							const pinId = f.get('name');
+							const PinCoords = toLonLat(
+								(f.getGeometry() as Point).getFirstCoordinate()
+							);
+							const coords = { id: pinId, coords: PinCoords };
+							dispatch(setCoordinates(coords));
+						},
+						[dispatch]
+					)}
+				/>
 			</RMap>
 		</div>
 	);
